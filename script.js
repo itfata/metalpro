@@ -53,8 +53,34 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') hideLightbox();
 });
 
-form?.addEventListener('submit', (event) => {
+form?.addEventListener('submit', async (event) => {
   event.preventDefault();
-  formNote.textContent = 'Дякуємо! Заявку зафіксовано. Для реального запуску підключіть відправку на email, Telegram або CRM.';
-  form.reset();
+
+  const submitButton = form.querySelector('button[type="submit"]');
+  const formData = new FormData(form);
+  const payload = Object.fromEntries(formData.entries());
+
+  submitButton.disabled = true;
+  submitButton.textContent = 'Надсилаємо...';
+  formNote.textContent = 'Заявка відправляється. Зачекайте кілька секунд.';
+
+  try {
+    const response = await fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error('Request failed');
+    }
+
+    formNote.textContent = "Дякуємо! Заявку надіслано. Ми зв'яжемося з вами найближчим часом.";
+    form.reset();
+  } catch (error) {
+    formNote.textContent = 'Не вдалося надіслати заявку. Будь ласка, зателефонуйте або спробуйте ще раз.';
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = 'Надіслати заявку';
+  }
 });
