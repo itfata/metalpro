@@ -76,6 +76,19 @@ form?.addEventListener('submit', async (event) => {
     }
 
     formNote.textContent = "Дякуємо! Заявку надіслано. Ми зв'яжемося з вами найближчим часом.";
+    if (typeof gtag === 'function') {
+
+  gtag('event', 'conversion', {
+
+    'send_to': 'AW-18248343411/kzAnCMr__cAcEPO-vv1D',
+
+    'value': 1.0,
+
+    'currency': 'RON'
+
+  });
+
+}
     form.reset();
   } catch (error) {
     formNote.textContent = 'Не вдалося надіслати заявку. Будь ласка, зателефонуйте або спробуйте ще раз.';
